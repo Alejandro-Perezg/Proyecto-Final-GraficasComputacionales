@@ -51,3 +51,4 @@ Requerimentos funcionales:
 1. El sistema cambiara automaticamente de escenario conforme vaya usandose el scroll down
 2. Al finalizar el recorrido, la animacion volvera a un punto de inicio
 3. Habra una breve instruccion al inicio de cada animacion para indicarle al usuario como interactuar con dicho programa
+4. Los objetos generados en las animaciones se crearan a partir de geometrias basicas (para generar efectos visuales y manipulacion de luces) e imagenes sacadas del internet
