@@ -15,12 +15,11 @@ Ejemplos notables de este género son : Pitfall!(1982), Canabalt(2009), Jetpack 
 3. El videojuego se adaptara a la resolución de la pantalla donde se esté jugando
 4. El juego de video tendrá una opción en el menú para poder ver las puntuaciones más altas
 5. El videojuego tendrá un escenario en 3d
-6. En el videojuego, se podrá elegir antes de empezar la partida, entre 3 tipos de personajes 
-7. El videojuego tendrá un sistema de score
-8. El videojuego tendrá ciertos tipos de powerUps
-9. El videojuego lanzará una pantalla de GameOver después perder
-10. El videojuego tendrá la opción de volver a jugar o regresar al menú en la pantalla de GameOver
-11. El videojuego tendrá como opción de movimiento el esquivar derecha o izquierda y saltar
+6. El videojuego tendrá un sistema de score
+7. El videojuego tendrá ciertos tipos de powerUps
+8. El videojuego lanzará una pantalla de GameOver después perder
+9. El videojuego tendrá la opción de volver a jugar o regresar al menú en la pantalla de GameOver
+10. El videojuego tendrá como opción de movimiento el esquivar derecha o izquierda y saltar
 
 Por último, para la realización de este proyecto, debido a la naturaleza del mismo, se tendría que usar la librería de Three.js, y en cuanto los modelos, se modificaría ciertos modelados en 3d, que sean de uso libre, para así ser usados en la realización del videojuego, para la música, se haría el intento de realizar 3 temas para el juego y por último todo lo que se trate de las pantallas(menú, opciones), se haría igualmente por medio de photoshop.
 
