@@ -20,6 +20,8 @@ Ejemplos notables de este género son : Pitfall!(1982), Canabalt(2009), Jetpack 
 8. El videojuego lanzará una pantalla de GameOver después perder
 9. El videojuego tendrá la opción de volver a jugar o regresar al menú en la pantalla de GameOver
 10. El videojuego tendrá como opción de movimiento el esquivar derecha o izquierda y saltar
+11. El juego contara con musica de fondo en el menú y en el juego
+12. El juego tendra efectos de sonido al disparar, recibir un golpe, agarrar un item y al elegir una opción en el menú
 
 Por último, para la realización de este proyecto, debido a la naturaleza del mismo, se tendría que usar la librería de Three.js, y en cuanto los modelos, se modificaría ciertos modelados en 3d, que sean de uso libre, para así ser usados en la realización del videojuego, para la música, se haría el intento de realizar 3 temas para el juego y por último todo lo que se trate de las pantallas(menú, opciones), se haría igualmente por medio de photoshop.
 
