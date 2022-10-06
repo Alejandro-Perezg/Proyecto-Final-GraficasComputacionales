@@ -1,55 +1,28 @@
 # Propuestas de proyecto final
-## 1. Juego tipo “endless runner”
-Esta propuesta de proyecto, está basada con la idea de realizar un juego simple, sencillo, y de una duración corta. El género de este juego sería un “Endless Runner”, este tipo de juegos tiene las siguientes características: 
+La propuesta de nuestro proyecto es el desarrollo de un videojuego con temática endless runner, el cual consiste en obtener la mayor cantidad de puntos en cada partida del juego, ya que a medida  que pasa el tiempo se complica el jugeo haciendo que al jugador se le sea difícil conseguir puntos y las posibilidades de perder y comenzar de nuevo la partida van aumentando
 
-El juego no acaba hasta que el jugador llegue a una condición donde se considere que haya perdido la partida
-Generalmente el juego está basado únicamente en un solo nivel
-La dificultad del juego está basada en cuánto tiempo el jugador aguanta en una partida, mientras mas tiempo pase en la partida, mas difícil se pone con el tiempo
-Las acciones del jugador se reducen a acciones evasivas, y raramente, a ataques defensivos 
-El objetivo de estos juegos están reducidos a obtener el mayor puntuación(“Score”) o a obtener ciertos coleccionables.
-Ejemplos notables de este género son : Pitfall!(1982), Canabalt(2009), Jetpack Joyride(2009), Temple Run(2011), Subway Surfers(2012), Super Mario Run (2016). 
+## Tematica
+El contexto de nuestro videojuego será el espacio, ya que el personaje principal de nuestro juego será una nave espacial y los enemigos o objetivos de nuestro personajes serán asteroides. Similar al juego Starfox (NES)
 
-    Requerimientos Funcionales:
-1. El videojuego tendrá un menú de inicio
-2. El videojuego tendrá una opción de ajustes, donde se podrá modificar el volumen del juego.
-3. El videojuego se adaptara a la resolución de la pantalla donde se esté jugando
-4. El juego de video tendrá una opción en el menú para poder ver las puntuaciones más altas
-5. El videojuego tendrá un escenario en 3d
-6. El videojuego tendrá un sistema de score
-7. El videojuego tendrá ciertos tipos de powerUps
-8. El videojuego lanzará una pantalla de GameOver después perder
-9. El videojuego tendrá la opción de volver a jugar o regresar al menú en la pantalla de GameOver
-10. El videojuego tendrá como opción de movimiento el esquivar derecha o izquierda y saltar
-11. El juego contara con musica de fondo en el menú y en el juego
-12. El juego tendra efectos de sonido al disparar, recibir un golpe, agarrar un item y al elegir una opción en el menú
+## Dinámica del juego
 
-Por último, para la realización de este proyecto, debido a la naturaleza del mismo, se tendría que usar la librería de Three.js, y en cuanto los modelos, se modificaría ciertos modelados en 3d, que sean de uso libre, para así ser usados en la realización del videojuego, para la música, se haría el intento de realizar 3 temas para el juego y por último todo lo que se trate de las pantallas(menú, opciones), se haría igualmente por medio de photoshop.
+El jugador contará con su personaje principal, que es la nave. Con ella tendrá que conseguir puntos destruyendo los asteroides que se van aproximando.El juego comienza con una velocidad lenta y con pocos asteroides para que el jugador pueda familiarizarse con el juego y así mismo practicar, pero en cuenta el juego vaya avanzando la velocidad aumentará al igual que los asteroides en la pantalla.
+ El objetivo principal del juego es conseguir la mayor puntuación en el juego, para posteriormente poder batir su propio récord  o el de otros jugadores.
+
+## Requerimientos Funcionales:
+1. Creación de una nave espacial a través de la creación de un grupo de polígonos triangulares.
+2. Generación de asteroides usando un algoritmo de randomización en dos planos.
+3. La nave podrá disparar para poder destruir los asteroides, esto con la ayuda del movimiento del mouse o teclado.
+4. La nave se podrá mover en todas las direcciones en un rango establecido, dependiendo de la resolución de nuestro canvas.
+5. El jugador tiene que evitar que dos meteoritos sobrepasen el límite de la pantalla, de lo contrario perderá.
+6. Se le darán puntos por cada meteorito que destruya al dispararle. 
+7. La velocidad irá aumentando a medida que el jugador avance en el juego, esto basándose en el desempeño del jugador y el tiempo transcurrido.
+8. Se le indicará al jugador cuando inicie el juego, a través de un pequeño menú interactivo.
+9. Se le indicará al jugador cuando pierda el juego,a través de un método que genere una pausa.
+10. Tendrá la opción de jugar de nuevo o salir. 
+11. El juego tendrá una interfaz que le indique su puntuacion
 
 
-## 2. Pacman
-Esta propuesta está basada en un juego muy popular creado el 21 de mayo de 1980 por Toru Iwatani, el cual fue llamado Pac-man.
-Nuestra propuesta es desarrollar este juego en 3D, ya que este juego fue creado en 2D.
-Características:
-Personajes: Pac.man y 4 fantasmas.
-El jugador cuenta con solo 3 vidas.
-El juego consiste en conseguir puntos mediante el pac-man  y no debe tocar a los fantasmas, cada que el jugador termina de comer todos los puntos del juego se reinicia el juego con una velocidad más alta y con los puntos obtenidos anteriormente.
-El jugador pierde vidas cada que toca a un fantasma.
-El pac-man podrá conseguir más puntos y comer a los fantasmas cuando come un punto grande y los fantasmas cambian de color. 
-Cuando el jugador pierde las 3 vidas deberá comenzar de nuevo con la velocidad más baja, y el objetivo es mejorar el récord anterior o más alto que se ha obtenido.
-Requerimientos Funcionales:
-1. El videojuego tendrá un menú de inicio
-2. El videojuego tendrá una opción de ajustes, donde se podrá modificar el volumen del juego.
-3. El videojuego mostrará el puntaje más alto.
-4. El jugador podrá ver cuántas vidas tiene.
-5. El videojuego tendrá una pantalla de “GameOver” y de “Start”
-6. Sonido de cuando el pacman está comiendo.
-7. Sonido cuando comienza el juego.
-8. Sonido cuando pierda cada vida.
+Para la mayor parte de los puntos mencionados anteriormente, se podrán resolver con los conocimientos vistos y que se verán a un futuro en la materia, e igualmente con guías y ejemplos dados por el profesor. Por el otro lado, requerimientos más específicos como lo es guardar el score más alto, entre otros se encontrará la forma con asesoría del profesor y de foros de informática que nos da una idea de cómo realizar esa función en específico.
 
-## 3. Video musical en 3d
-La idea es realizar un esceneario que este constantemente cambiando de a cuerdo al rimo de una cancion, usando animaciones para cambiar el entorno, luces y sombras, no se espera el uso de una interfaz grafica, ya que el usuario estara desplazando la camara de forma interactiva con el ambiente, para dar una sensacion de navegación (ejemplo: https://www.aquarium.ru/en)
-Requerimentos funcionales:
-1. El sistema cambiara automaticamente de escenario conforme vaya usandose el scroll down
-2. Al finalizar el recorrido, la animacion volvera a un punto de inicio
-3. Habra una breve instruccion al inicio de cada animacion para indicarle al usuario como interactuar con dicho programa
-4. Los objetos generados en las animaciones se crearan a partir de geometrias basicas (para generar efectos visuales y manipulacion de luces) e imagenes sacadas del internet
+En cuanto las librerías, por ahora solo tenemos previsto usar la librería de Keyframe, que nos ayudará en todo lo enfocado en animaciones, definiendo frames en específico para poder realizar las animaciones del juego, y el más importante, Three.js, que es el que nos dará todas las herramientas para poder realizar, modificar, y manipular todos los objetos creados en nuestro espacio en tercera dimensión, para poder así, realizar todo lo que es el videojuego que tenemos pensando en realizar.
