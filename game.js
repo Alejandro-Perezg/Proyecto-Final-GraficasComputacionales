@@ -4,17 +4,17 @@
 import * as THREE from './libs/three.js/three.module.js'
 import { OrbitControls } from './libs/three.js/controls/OrbitControls.js';
 import { OBJLoader } from './libs/three.js/loaders/OBJLoader.js';
-import { AsciiEffect } from 'three/addons/effects/AsciiEffect.js'
+//import { AsciiEffect } from './effects/AsciiEffect.js'
 
 let renderer = null, scene = null, camera = null, orbitControls = null, group = null, objectList=[];
-let ambientLight = null, directionalLight = null, spotLight;
+let spotLight, effect;
 let shipObj = {obj:'/assets/spaceship/spaceship.obj', map:'/assets/spaceship/textures/Intergalactic Spaceship_rough.jpg'};
 
 let SHADOW_MAP_WIDTH = 2048, SHADOW_MAP_HEIGHT = 2048;
-let tankgroup = null, tank = null;
+let shipGroup = null, ship = null;
 
 
-let mapUrl = "/assets/images/galaxy.jpg";
+
 
 function main()
 {
@@ -63,7 +63,6 @@ async function loadObj(objModelUrl, objectList,xpos,ypos,zpos)
                 child.castShadow = true;
                 child.receiveShadow = true;    
                 child.material.map = texture;
-               
 
             }
         
@@ -115,33 +114,24 @@ async function createScene(canvas)
 
    spotLight.shadow.camera.near = 1;
    spotLight.shadow.camera.far = 200;
-   spotLight.shadow.camera.fov = 45;
+   spotLight.shadow.camera.fov = 50;
    
    spotLight.shadow.mapSize.width = SHADOW_MAP_WIDTH;
    spotLight.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
 
-   tankgroup = new THREE.Object3D;
-   tank = await loadObj(shipObj, objectList, 1,1,1);
-   tankgroup.add(tank);
-   tankgroup.rotation.y = 50
+   shipGroup = new THREE.Object3D;
+   ship = await loadObj(shipObj, objectList, 1,1,1);
+   shipGroup.add(ship);
+   shipGroup.rotation.y = 50
 
-   scene.add(tankgroup);
-    const map = new THREE.TextureLoader().load(mapUrl);
-    map.wrapS = map.wrapT = THREE.RepeatWrapping;
-    map.repeat.set(8, 8);
+   scene.add(shipGroup);
 
-    let geometry = new THREE.PlaneGeometry(200, 200, 50, 50);
-    let mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({map:map, side:THREE.DoubleSide}));
 
-    mesh.rotation.x = -Math.PI / 2;
-    mesh.position.y = -4.02;
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-
-    scene.add( mesh );
-
-  
-
+    // effect = new Ascii( renderer, ' .:-+*=%@#', { invert: true } );
+    // effect.setSize( window.innerWidth, window.innerHeight );
+    // effect.domElement.style.color = 'white';
+    // effect.domElement.style.backgroundColor = 'black';
+    // document.body.appendChild( effect.domElement );
 }
 
 
