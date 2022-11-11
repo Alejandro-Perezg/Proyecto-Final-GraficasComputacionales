@@ -100,14 +100,14 @@ async function createScene(canvas)
 
     scene = new THREE.Scene();
     scene.background = new THREE.CubeTextureLoader()
-        .setPath('assets/images')
+        .setPath('/assets/images')
         .load([
-            'galaxy.jpg',
-            'galaxy.jpg',
-            'galaxy.jpg',
-            'galaxy.jpg',
-            'galaxy.jpg',
-            'galaxy.jpg',
+            'front.png',
+            'back.png',
+            'top.png',
+            'bottom.png',
+            'right.png',
+            'left.png',
         ]);
 
     camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
