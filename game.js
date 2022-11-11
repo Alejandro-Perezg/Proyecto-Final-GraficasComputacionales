@@ -99,6 +99,17 @@ async function createScene(canvas)
     renderer.shadowMap.type = THREE.PCFShadowMap;
 
     scene = new THREE.Scene();
+    scene.background = new THREE.CubeTextureLoader()
+        .setPath('assets/images')
+        .load([
+            'galaxy.jpg',
+            'galaxy.jpg',
+            'galaxy.jpg',
+            'galaxy.jpg',
+            'galaxy.jpg',
+            'galaxy.jpg',
+        ]);
+
     camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
     camera.position.set(-30, 1, 1);
     orbitControls = new OrbitControls(camera, renderer.domElement);
@@ -133,6 +144,8 @@ async function createScene(canvas)
     // effect.domElement.style.backgroundColor = 'black';
     // document.body.appendChild( effect.domElement );
 }
+
+//TODO: add skybox, menu, ascii effects
 
 
 
