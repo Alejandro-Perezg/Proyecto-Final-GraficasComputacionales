@@ -1,0 +1,17 @@
+*
+{
+    margin: auto;
+    padding: auto;
+}
+
+#webglcanvas
+{
+    position: fixed;
+    top: 0%;
+    left: 0;
+    outline: none;
+}
+html,body
+{
+    overflow: hidden;
+}
