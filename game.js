@@ -7,6 +7,7 @@ import { OBJLoader } from './libs/three.js/loaders/OBJLoader.js';
 let renderer, scene, camera,orbitControls;
 let shipGroup, ship, objectList=[];
 let shipObj = {obj:'/assets/spaceship/spaceship.obj', map:'/assets/spaceship/textures/Intergalactic Spaceship_rough.jpg'};
+let asteroidObj = {obj:'assets/asteroid/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/asteroid.obj', map:'/assets/asteroid/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/10464_Asteroid_v1_diffuse.jpg'}
 
 
 function main()
@@ -86,7 +87,7 @@ async function createScene(canvas)
         'milkyway_nz.jpg',
     ]);
 
-    camera = new THREE.PerspectiveCamera( 70, canvas.width / canvas.height, 1, 4000 );
+    camera = new THREE.PerspectiveCamera( 70, window.innerWidth / winsow.innerHeight, 1, 4000 );
     camera.position.set(-25, 2.5, 6.5);
     orbitControls = new OrbitControls(camera, renderer.domElement);
 
@@ -100,7 +101,7 @@ async function createScene(canvas)
     shipGroup.add(ship);
     shipGroup.rotation.y = 1.8
     shipMovement(shipGroup)
-    //console.log(shipGroup.position)
+    console.log(shipGroup.position)
 
     scene.add(shipGroup);
 
@@ -116,7 +117,11 @@ function shipMovement(shipGroup)
         if(event.key == 'a') ship.position.x += 1
     })
 
-    console.log(shipGroup.position)
+    
 }
 
+function generateAsteroids(asteroidObj)
+{
+
+}
 main();
