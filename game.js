@@ -8,7 +8,8 @@ let renderer, scene, camera,orbitControls;
 let shipGroup, ship, asteroid;
 let shipObj = {obj:'/assets/spaceship/spaceship.obj', map:'/assets/spaceship/textures/Intergalactic Spaceship_rough.jpg'};
 let asteroidObj = {obj:'assets/asteroid/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/asteroid.obj', map:'/assets/asteroid/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/10464_Asteroid_v1_diffuse.jpg'}
-
+const duration = 5000;
+let currentTime = Date.now();
 
 function main()
 {
@@ -33,6 +34,7 @@ function update()
 {
     requestAnimationFrame(function() { update(); });
     renderer.render( scene, camera );
+    animateAsteroids(asteroid);
     orbitControls.update();
 }
 
@@ -100,15 +102,16 @@ async function createScene(canvas)
 
     shipGroup = new THREE.Object3D;
     ship = await loadObj(shipObj,0,-15,3,1,1,1);
-    asteroid = await loadObj(asteroidObj,0,10,36,.01,.01,.01);
+    asteroid = await loadObj(asteroidObj,0,10,50,.005,.005,.005);
+    animateAsteroids(asteroid);
     shipGroup.add(ship);
     shipGroup.add(asteroid);
     shipGroup.rotation.y = 1.8
     shipMovement(shipGroup)
-    console.log(shipGroup.position)
+    console.log(ship.position)
 
     scene.add(shipGroup);
-    
+   
 
 
 }
@@ -125,8 +128,26 @@ function shipMovement(shipGroup)
     
 }
 
-function generateAsteroids(asteroid)
+function animateAsteroids(asteroid)
 {
-  //TODO
+    const now = Date.now();
+    const deltat = now - currentTime;
+    currentTime = now;
+    const fract = deltat / duration;
+    const angle = Math.PI * 2 * fract;
+    let visible = true;
+
+    asteroid.rotation.x += angle
+    asteroid.rotation.z += angle
+
+    if (asteroid.position.z >= 0) visible = true;
+    if (asteroid.position.z <=-40) visible = false;       
+  
+
+    if (visible) {
+        asteroid.position.z -= 1
+    } else {
+        asteroid.position.z = 50
+    }
 }
 main();
