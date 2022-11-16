@@ -34,7 +34,7 @@ function update()
 {
     requestAnimationFrame(function() { update(); });
     renderer.render( scene, camera );
-    animateAsteroids(asteroid);
+    generateAsteroids(asteroid);
     orbitControls.update();
 }
 
@@ -103,7 +103,7 @@ async function createScene(canvas)
     shipGroup = new THREE.Object3D;
     ship = await loadObj(shipObj,0,-15,3,1,1,1);
     asteroid = await loadObj(asteroidObj,0,10,50,.005,.005,.005);
-    animateAsteroids(asteroid);
+    generateAsteroids(asteroid,ship);
     shipGroup.add(ship);
     shipGroup.add(asteroid);
     shipGroup.rotation.y = 1.8
@@ -128,7 +128,7 @@ function shipMovement(shipGroup)
     
 }
 
-function animateAsteroids(asteroid)
+async function generateAsteroids(asteroid, ship)
 {
     const now = Date.now();
     const deltat = now - currentTime;
@@ -136,21 +136,42 @@ function animateAsteroids(asteroid)
     const fract = deltat / duration;
     const angle = Math.PI * 2 * fract;
     let visible = true;
+    const max = 30;
+    const min = -30;
 
     asteroid.rotation.x += angle
     asteroid.rotation.z += angle
     
     //TODO: Maybe this section will be implemented at generation function 
-    // if (asteroid.position.z >= 0) visible = true;
-    // if (asteroid.position.z <=-40) visible = false;       
+    if (asteroid.position.z >= 0) visible = true;
+    if (asteroid.position.z <=-40) visible = false;       
   
 
-    // if (visible) {
-    //     asteroid.position.z -= 1
-    // } else {
-    //     asteroid.position.z = 50
-    // }
+    if (visible) {
+        asteroid.position.z -= 1.5
+    } else {
+        asteroid.position.z = 70
+        asteroid.position.x = (Math.random()) * (max - min) + min;
+        asteroid.position.y = (Math.random()) * (max - min) + min;
+    }
+    return asteroid;
 }
+
+// async function generateAsteroids(asteroid)
+// {
+//     let visible = true
+//     if (asteroid.position.z >= 0) visible = true;
+//     if (asteroid.position.z <=-40) visible = false;       
+  
+
+//     if (visible) {
+//         asteroid.position.z -= 1
+//     } else {
+//         asteroid.position.z = 50
+//     }
+//  return object;
+// }
+
 main();
 
 // u cant escape, it lives in your walls
