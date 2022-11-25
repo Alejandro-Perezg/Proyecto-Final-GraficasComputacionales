@@ -1,34 +1,29 @@
-
 "use strict"; 
 
 import * as THREE from './libs/three.js/three.module.js'
 import { OrbitControls } from './libs/three.js/controls/OrbitControls.js';
 import { OBJLoader } from './libs/three.js/loaders/OBJLoader.js';
+import {Asteroid} from './Asteroid.js'
 
-//import { AsciiEffect } from './effects/AsciiEffect.js'
-
-let renderer = null, scene = null, camera = null, orbitControls = null, group = null, objectList=[];
-let spotLight, effect;
+let contador = 0;
+let renderer, scene, camera,orbitControls;
+let shipGroup, ship, asteroid;
+let asteroidList=[];
 let shipObj = {obj:'/assets/spaceship/spaceship.obj', map:'/assets/spaceship/textures/Intergalactic Spaceship_rough.jpg'};
-
-let SHADOW_MAP_WIDTH = 2048, SHADOW_MAP_HEIGHT = 2048;
-let shipGroup = null, ship = null;
+let asteroidObj = {obj:'assets/asteroid/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/asteroid.obj', map:'/assets/asteroid/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/10464_Asteroid_v1_diffuse.jpg'};
 
 
 
 function main()
 {
     const canvas = document.getElementById("webglcanvas");
-
     createScene(canvas);
-
     update();
-
-    
 }
-//troubleshooting
-function onError ( err ){ console.error(err); };
 
+//troubleshooting models
+function onError ( err ){ console.error(err); };
+//loading models progress
 function onProgress( xhr ) 
 {
     if ( xhr.lengthComputable ) {
@@ -37,23 +32,34 @@ function onProgress( xhr )
         console.log( xhr.target.responseURL, Math.round( percentComplete, 2 ) + '% downloaded' );
     }
 }
-/////////////////////////
 
 function update() 
 {
     requestAnimationFrame(function() { update(); });
-    
     renderer.render( scene, camera );
+    contador++
+    if (contador % 30 == 0) { 
+        contador = 0
+        let renderedAsteroid = new Asteroid (0,10,15,asteroid, scene)
+        asteroidList.push(renderedAsteroid)
+        //console.log("sdasdasd") 
+    }
 
+    for (let index = 0; index < asteroidList.length; index++) {
+        const element = asteroidList[index];
+        element.update()
+    }
     orbitControls.update();
+    //renderedAsteroid.update()
+    
 }
 
-async function loadObj(objModelUrl, objectList,xpos,ypos,zpos)
+async function loadObj(objModel,xpos,ypos,zpos,scaleX,scaleY,scaleZ)
 {
     try
     {
-        const object = await new OBJLoader().loadAsync(objModelUrl.obj, onProgress, onError);
-        let texture = new THREE.TextureLoader().load(shipObj.map);
+        const object = await new OBJLoader().loadAsync(objModel.obj, onProgress, onError);
+        let texture = new THREE.TextureLoader().load(objModel.map);
         console.log(object);
         
     
@@ -67,16 +73,13 @@ async function loadObj(objModelUrl, objectList,xpos,ypos,zpos)
             }
         
 
-        object.scale.set(2, 2, 2);
+        object.scale.set(scaleX, scaleY, scaleZ);
         object.position.z = zpos;
         object.position.x = xpos;
         object.position.y = ypos;
       
     
         object.name = "objObject";
-       
-        
-       
         return object
     }
     catch (err) 
@@ -86,17 +89,11 @@ async function loadObj(objModelUrl, objectList,xpos,ypos,zpos)
 }
 
 
-async function createScene(canvas) 
+
+async function createScene(canvas)
 {
     renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true } );
-
     renderer.setSize(window.innerWidth, window.innerHeight);
-
-    // Turn on shadows
-    renderer.shadowMap.enabled = true;
-
-    // Options are THREE.BasicShadowMap, THREE.PCFShadowMap, PCFSoftShadowMap
-    renderer.shadowMap.type = THREE.PCFShadowMap;
 
     scene = new THREE.Scene();
     scene.background = new THREE.CubeTextureLoader()
@@ -111,42 +108,122 @@ async function createScene(canvas)
     ]);
 
     camera = new THREE.PerspectiveCamera( 70, canvas.width / canvas.height, 1, 4000 );
-    camera.position.set(-25, 15, 1);
+    camera.position.set(-25, 2.5, 6.5);
     orbitControls = new OrbitControls(camera, renderer.domElement);
 
+    const sun = new THREE.SpotLight(0xe9f7f7);
+    sun.position.set(0,100,1000)
+    sun.castShadow = true;
+    scene.add(sun);
 
-    // Lights
-   spotLight = new THREE.SpotLight (0xaaaaaa);
-   spotLight.position.set(2, 9, 15);
-   spotLight.target.position.set(-2, 0, -2);
-   scene.add(spotLight);
+    shipGroup = new THREE.Object3D;
+    ship = await loadObj(shipObj,0,-15,3,1,1,1);
+    asteroid = await loadObj(asteroidObj,0,10,50,.005,.005,.005);
+    console.log(asteroid)
+    //renderedAsteroid = new Asteroid(0,10,50,asteroid);
+   // let onscreenAsteroid = renderedAsteroid.spawn(asteroid)
+    
+    //generateAsteroids(asteroid,ship);
+    shipGroup.add(ship);
+    //shipGroup.add(onscreenAsteroid); 
+    shipGroup.rotation.y = 1.8
+    shipMovement(shipGroup)
+    console.log(ship.position)
 
-   spotLight.castShadow = true;
-
-   spotLight.shadow.camera.near = 1;
-   spotLight.shadow.camera.far = 200;
-   spotLight.shadow.camera.fov = 50;
+    scene.add(shipGroup);
    
-   spotLight.shadow.mapSize.width = SHADOW_MAP_WIDTH;
-   spotLight.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
-
-   shipGroup = new THREE.Object3D;
-   ship = await loadObj(shipObj, objectList, 1,1,1);
-   shipGroup.add(ship);
-   shipGroup.rotation.y = 1.6
-
-   scene.add(shipGroup);
 
 
-    // effect = new Ascii( renderer, ' .:-+*=%@#', { invert: true } );
-    // effect.setSize( window.innerWidth, window.innerHeight );
-    // effect.domElement.style.color = 'white';
-    // effect.domElement.style.backgroundColor = 'black';
-    // document.body.appendChild( effect.domElement );
 }
 
-//TODO: add skybox, menu, ascii effects
+function shipMovement(shipGroup)
+{
+    document.addEventListener("keydown", event=>{
+        if(event.key == 'w') ship.position.y += 1
+        if(event.key == 's') ship.position.y -= 1
+        if(event.key == 'd') ship.position.x -= 1
+        if(event.key == 'a') ship.position.x += 1
+    })
 
+    
+}
+
+// async function generateAsteroids(asteroid)
+// {
+//     const now = Date.now();
+//     const deltat = now - currentTime;
+//     currentTime = now;
+//     const fract = deltat / duration;
+//     const angle = Math.PI * 2 * fract;
+//     let visible = true;
+//     const max = 30;
+//     const min = -30;
+
+//     asteroid.rotation.x += angle
+//     asteroid.rotation.z += angle
+    
+//     //TODO: Maybe this section will be implemented at generation function 
+//     if (asteroid.position.z >= 0) visible = true;
+//     if (asteroid.position.z <=-40) visible = false;       
+  
+
+//     if (visible) {
+//         asteroid.position.z -= 1.5
+//     } else {
+//         asteroid.position.z = 70
+//         asteroid.position.x = (Math.random()) * (max - min) + min;
+//         asteroid.position.y = (Math.random()) * (max - min) + min;
+//     }
+//     return asteroid;
+// }
 
 
 main();
+
+// u cant escape, it lives in your walls
+// ███████╗██╗░░░██╗███╗░░██╗███╗░░██╗██╗░░░██╗
+// ██╔════╝██║░░░██║████╗░██║████╗░██║╚██╗░██╔╝
+// █████╗░░██║░░░██║██╔██╗██║██╔██╗██║░╚████╔╝░
+// ██╔══╝░░██║░░░██║██║╚████║██║╚████║░░╚██╔╝░░
+// ██║░░░░░╚██████╔╝██║░╚███║██║░╚███║░░░██║░░░
+// ╚═╝░░░░░░╚═════╝░╚═╝░░╚══╝╚═╝░░╚══╝░░░╚═╝░░░
+
+// ░█████╗░░█████╗░████████╗
+// ██╔══██╗██╔══██╗╚══██╔══╝
+// ██║░░╚═╝███████║░░░██║░░░
+// ██║░░██╗██╔══██║░░░██║░░░
+// ╚█████╔╝██║░░██║░░░██║░░░
+// ░╚════╝░╚═╝░░╚═╝░░░╚═╝░░░
+
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡔⣻⠁⠀⢀⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⢀⣾⠳⢶⣦⠤⣀⠀⠀⠀⠀⠀⠀⠀⣾⢀⡇⡴⠋⣀⠴⣊⣩⣤⠶⠞⢹⣄⠀⠀⠀
+// ⠀⠀⠀⠀⢸⠀⠀⢠⠈⠙⠢⣙⠲⢤⠤⠤⠀⠒⠳⡄⣿⢀⠾⠓⢋⠅⠛⠉⠉⠝⠀⠼⠀⠀⠀
+// ⠀⠀⠀⠀⢸⠀⢰⡀⠁⠀⠀⠈⠑⠦⡀⠀⠀⠀⠀⠈⠺⢿⣂⠀⠉⠐⠲⡤⣄⢉⠝⢸⠀⠀⠀
+// ⠀⠀⠀⠀⢸⠀⢀⡹⠆⠀⠀⠀⠀⡠⠃⠀⠀⠀⠀⠀⠀⠀⠉⠙⠲⣄⠀⠀⠙⣷⡄⢸⠀⠀⠀
+// ⠀⠀⠀⠀⢸⡀⠙⠂⢠⠀⠀⡠⠊⠀⠀⠀⠀⢠⠀⠀⠀⠀⠘⠄⠀⠀⠑⢦⣔⠀⢡⡸⠀⠀⠀
+// ⠀⠀⠀⠀⢀⣧⠀⢀⡧⣴⠯⡀⠀⠀⠀⠀⠀⡎⠀⠀⠀⠀⠀⢸⡠⠔⠈⠁⠙⡗⡤⣷⡀⠀⠀
+// ⠀⠀⠀⠀⡜⠈⠚⠁⣬⠓⠒⢼⠅⠀⠀⠀⣠⡇⠀⠀⠀⠀⠀⠀⣧⠀⠀⠀⡀⢹⠀⠸⡄⠀⠀
+// ⠀⠀⠀⡸⠀⠀⠀⠘⢸⢀⠐⢃⠀⠀⠀⡰⠋⡇⠀⠀⠀⢠⠀⠀⡿⣆⠀⠀⣧⡈⡇⠆⢻⠀⠀
+// ⠀⠀⢰⠃⠀⠀⢀⡇⠼⠉⠀⢸⡤⠤⣶⡖⠒⠺⢄⡀⢀⠎⡆⣸⣥⠬⠧⢴⣿⠉⠁⠸⡀⣇⠀
+// ⠀⠀⠇⠀⠀⠀⢸⠀⠀⠀⣰⠋⠀⢸⣿⣿⠀⠀⠀⠙⢧⡴⢹⣿⣿⠀⠀⠀⠈⣆⠀⠀⢧⢹⡄
+// ⠀⣸⠀⢠⠀⠀⢸⡀⠀⠀⢻⡀⠀⢸⣿⣿⠀⠀⠀⠀⡼⣇⢸⣿⣿⠀⠀⠀⢀⠏⠀⠀⢸⠀⠇
+// ⠀⠓⠈⢃⠀⠀⠀⡇⠀⠀⠀⣗⠦⣀⣿⡇⠀⣀⠤⠊⠀⠈⠺⢿⣃⣀⠤⠔⢸⠀⠀⠀⣼⠑⢼
+// ⠀⠀⠀⢸⡀⣀⣾⣷⡀⠀⢸⣯⣦⡀⠀⠀⠀⢇⣀⣀⠐⠦⣀⠘⠀⠀⢀⣰⣿⣄⠀⠀⡟⠀⠀
+// ⠀⠀⠀⠀⠛⠁⣿⣿⣧⠀⣿⣿⣿⣿⣦⣀⠀⠀⠀⠀⠀⠀⠀⣀⣠⣴⣿⣿⡿⠈⠢⣼⡇⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠈⠁⠈⠻⠈⢻⡿⠉⣿⠿⠛⡇⠒⠒⢲⠺⢿⣿⣿⠉⠻⡿⠁⠀⠀⠈⠁⠀⠀
+// ⢀⠤⠒⠦⡀⠀⠀⠀⠀⠀⠀⠀⢀⠞⠉⠆⠀⠀⠉⠉⠉⠀⠀⡝⣍⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⡎⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⡰⠋⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⢡⠈⢦⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⡇⠀⠀⠸⠁⠀⠀⠀⠀⢀⠜⠁⠀⠀⠀⡸⠀⠀⠀⠀⠀⠀⠀⠘⡄⠈⢳⡀⠀⠀⠀⠀⠀⠀⠀
+// ⡇⠀⠀⢠⠀⠀⠀⠀⠠⣯⣀⠀⠀⠀⡰⡇⠀⠀⠀⠀⠀⠀⠀⠀⢣⠀⢀⡦⠤⢄⡀⠀⠀⠀⠀
+// ⢱⡀⠀⠈⠳⢤⣠⠖⠋⠛⠛⢷⣄⢠⣷⠁⠀⠀⠀⠀⠀⠀⠀⠀⠘⡾⢳⠃⠀⠀⠘⢇⠀⠀⠀
+// ⠀⠙⢦⡀⠀⢠⠁⠀⠀⠀⠀⠀⠙⣿⣏⣀⠀⠀⠀⠀⠀⠀⠀⣀⣴⣧⡃⠀⠀⠀⠀⣸⠀⠀⠀
+// ⠀⠀⠀⠈⠉⢺⣄⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣗⣤⣀⣠⡾⠃⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠣⢅⡤⣀⣀⣠⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⠉⠉⠉⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠁⠀⠉⣿⣿⣿⣿⣿⡿⠻⣿⣿⣿⣿⠛⠉⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⣿⣿⠀⠀⠀⠀⣿⣿⣿⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⣿⣿⣿⣟⠀⠀⢠⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⣿⣿⠀⠀⢸⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⡏⠀⠀⢸⣿⣿⣿⣿⣿⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⠀⠀⠀⢺⣿⣿⣿⣿⣿⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠈⠉⠻⣿⣿⣿⠟⠀⠀⠀⠀⠀⠀⠀⠀
+// ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
