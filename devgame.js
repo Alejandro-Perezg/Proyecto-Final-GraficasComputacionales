@@ -12,6 +12,7 @@ let asteroidList=[];
 let shipObj = {obj:'/assets/spaceship/spaceship.obj', map:'/assets/spaceship/textures/Intergalactic Spaceship_rough.jpg'};
 let asteroidObj = {obj:'assets/asteroid/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/asteroid.obj', map:'/assets/asteroid/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/10464_Asteroid_v1_diffuse.jpg'};
 let up = false, down = false, right = false, left = false;
+//let objectWorldPosition = new THREE.Vector3()
 
 
 
@@ -74,7 +75,7 @@ function update()
     requestAnimationFrame(function() { update(); });
     renderer.render( scene, camera ); 
     counter++
-    if (counter % 10 == 0) { 
+    if (counter % 20 == 0) { 
         counter = 0
         let renderedAsteroid = new Asteroid (0,10,155,asteroid.clone(), shipGroup)
         asteroidList.push(renderedAsteroid) 
@@ -83,13 +84,16 @@ function update()
     for (let index = 0; index < asteroidList.length; index++) {
         const element = asteroidList[index];
         element.update()
-        if (element.getPosition() <= -10) {
-            element.despawn()
-        }
+        if(element.getPosition() <= -50){element.despawn()}
     }
 
+    // for (let index = 0; index < asteroidList.length; index++) {
+    //     const element = asteroidList[index];
+    //     if(element.getPosition() <= -10){element.despawn()}
+    // }
+
     orbitControls.update();
-    shipMovement(shipGroup)
+    shipMovement(ship)
     
 }
 
@@ -142,7 +146,7 @@ async function createScene(canvas)
 }
 
 
-function shipMovement(shipGroup)
+function shipMovement(ship)
 {
     document.addEventListener("keydown", event=>{
         if(event.key == 'w') up = true

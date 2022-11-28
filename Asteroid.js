@@ -24,8 +24,7 @@ class Asteroid
 
     despawn()
     {
-        this.asteroidObj.remove()
-        console.log("despawning")
+        this.asteroidObj.clear()
     }
 
     getPosition()
