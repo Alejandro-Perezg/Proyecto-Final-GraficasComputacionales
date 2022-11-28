@@ -85,12 +85,8 @@ function update()
         const element = asteroidList[index];
         element.update()
         if(element.getPosition() <= -50){element.despawn()}
+        
     }
-
-    // for (let index = 0; index < asteroidList.length; index++) {
-    //     const element = asteroidList[index];
-    //     if(element.getPosition() <= -10){element.despawn()}
-    // }
 
     orbitControls.update();
     shipMovement(ship)
@@ -175,6 +171,7 @@ function shipMovement(ship)
     if(right) ship.position.x -= 1;
     if(left) ship.position.x += 1;
 }
+
 
 
 
