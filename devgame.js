@@ -6,13 +6,13 @@ import { OBJLoader } from './libs/three.js/loaders/OBJLoader.js';
 import {Asteroid} from './Asteroid.js'
 
 let counter = 0;
-let renderer, scene, camera,orbitControls;
-let shipGroup, ship, asteroid;
+let renderer, scene, camera, orbitControls;
+let shipGroup, ship, asteroid, bullet, bulletGeometry;
 let asteroidList=[];
 let shipObj = {obj:'/assets/spaceship/spaceship.obj', map:'/assets/spaceship/textures/Intergalactic Spaceship_rough.jpg'};
 let asteroidObj = {obj:'assets/asteroid/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/asteroid.obj', map:'/assets/asteroid/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/10464_Asteroid_v1_diffuse.jpg'};
-let up = false, down = false, right = false, left = false;
-//let objectWorldPosition = new THREE.Vector3()
+let up = false, down = false, right = false, left = false, shooting = false;
+
 
 
 
@@ -84,12 +84,14 @@ function update()
     for (let index = 0; index < asteroidList.length; index++) {
         const element = asteroidList[index];
         element.update()
-        if(element.getPosition() <= -50){element.despawn()}
-        
+        if(element.getPosition().z <= -50){element.despawn()}
+        if(element.getPosition() == getShipPosition(ship)){element.despawn()}
     }
 
     orbitControls.update();
-    shipMovement(ship)
+    shipMovement(ship);
+    getShipPosition(ship);
+    generateBullet(bullet,ship);
     
 }
 
@@ -127,9 +129,12 @@ async function createScene(canvas)
     shipGroup = new THREE.Object3D;
     ship = await loadObj(shipObj,0,-15,3,1,1,1);
     asteroid = await loadObj(asteroidObj,0,10,550,.005,.005,.005);
-    
-
+    bulletGeometry = new THREE.SphereGeometry(.5,30,30)
+    const material = new THREE.MeshBasicMaterial({color: 'blue'})
+    bullet = new THREE.Mesh(bulletGeometry,material)
+    bullet.position.z = 32
     shipGroup.add(ship);
+    shipGroup.add(bullet);
      
     shipGroup.rotation.y = 1.8
     shipMovement(shipGroup)
@@ -172,9 +177,29 @@ function shipMovement(ship)
     if(left) ship.position.x += 1;
 }
 
+function getShipPosition(ship)
+{
+    let shipPosition = ship.position
+    return shipPosition
+}
 
+function generateBullet(bullet,ship)
+{   
+    const shipPosition = getShipPosition(ship)
+    document.addEventListener("keydown", event=>{
+        if(event.key == ' ') shooting = true
+    })
 
-
+    document.addEventListener("keyup", event=>{
+        if(event.key == ' ') shooting = false
+    })
+    
+    // if(shooting){
+    //     bullet.position += 1 
+    // }
+    console.log("shooting: ",shooting)
+ 
+}
 
 
 main();

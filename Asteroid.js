@@ -29,7 +29,7 @@ class Asteroid
 
     getPosition()
     {
-        let position = this.asteroidObj.position.z
+        let position = this.asteroidObj.position
         return position
     }
     
