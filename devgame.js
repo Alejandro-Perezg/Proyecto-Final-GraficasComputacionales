@@ -4,6 +4,7 @@ import * as THREE from './libs/three.js/three.module.js'
 import { OrbitControls } from './libs/three.js/controls/OrbitControls.js';
 import { OBJLoader } from './libs/three.js/loaders/OBJLoader.js';
 import {Asteroid} from './Asteroid.js'
+import { Bullet } from './Bullet.js';
 
 let counter = 0;
 let renderer, scene, camera, orbitControls;
@@ -74,10 +75,12 @@ function update()
 
     requestAnimationFrame(function() { update(); });
     renderer.render( scene, camera ); 
+    let shipLocation = getShipPosition(ship)
+    //let renderedBullet = new Bullet(0,0,0,bullet.clone(),shipLocation,shipGroup)
     counter++
     if (counter % 20 == 0) { 
         counter = 0
-        let renderedAsteroid = new Asteroid (0,10,155,asteroid.clone(), shipGroup)
+        let renderedAsteroid = new Asteroid (0,10,155,asteroid, shipGroup)
         asteroidList.push(renderedAsteroid) 
     }
 
@@ -87,11 +90,12 @@ function update()
         if(element.getPosition().z <= -50){element.despawn()}
         if(element.getPosition() == getShipPosition(ship)){element.despawn()}
     }
-
+    //renderedBullet.update()
     orbitControls.update();
     shipMovement(ship);
     getShipPosition(ship);
-    generateBullet(bullet,ship);
+   
+    
     
 }
 
@@ -132,9 +136,8 @@ async function createScene(canvas)
     bulletGeometry = new THREE.SphereGeometry(.5,30,30)
     const material = new THREE.MeshBasicMaterial({color: 'blue'})
     bullet = new THREE.Mesh(bulletGeometry,material)
-    bullet.position.z = 32
+   
     shipGroup.add(ship);
-    shipGroup.add(bullet);
      
     shipGroup.rotation.y = 1.8
     shipMovement(shipGroup)
@@ -154,6 +157,7 @@ function shipMovement(ship)
         if(event.key == 's') down = true
         if(event.key == 'd') right = true
         if(event.key == 'a') left = true
+        if(event.key == ' ') shooting = true
     })
 
 
@@ -162,6 +166,7 @@ function shipMovement(ship)
         if(event.key == 's') down = false
         if(event.key == 'd') right = false
         if(event.key == 'a') left = false
+        if(event.key == ' ') shooting = false
     })
 
 
@@ -175,31 +180,31 @@ function shipMovement(ship)
     if(down) ship.position.y -= 1;
     if(right) ship.position.x -= 1;
     if(left) ship.position.x += 1;
+    if(shooting) console.log("shooting")
 }
 
 function getShipPosition(ship)
 {
     let shipPosition = ship.position
+    //console.log(shipPosition)
     return shipPosition
 }
 
-function generateBullet(bullet,ship)
-{   
-    const shipPosition = getShipPosition(ship)
-    document.addEventListener("keydown", event=>{
-        if(event.key == ' ') shooting = true
-    })
+// function spawnShoot(renderedBullet, shipPosition){
+//     let shoot = false
+//     document.addEventListener("keyup", event=>{
+//         if(event.key == ' ') shoot = false
+//     })
 
-    document.addEventListener("keyup", event=>{
-        if(event.key == ' ') shooting = false
-    })
-    
-    // if(shooting){
-    //     bullet.position += 1 
-    // }
-    console.log("shooting: ",shooting)
- 
-}
+//     document.addEventListener("keydown", event=>{
+//         if(event.key == ' ') shoot = true
+//     })
+
+//     if (shoot){
+//         renderedBullet.update()
+//     }
+
+// }
 
 
 main();
