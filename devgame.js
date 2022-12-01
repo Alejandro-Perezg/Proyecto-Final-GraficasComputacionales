@@ -9,6 +9,7 @@ import { Bullet } from './Bullet.js';
 let counter = 0;
 let renderer, scene, camera, orbitControls;
 let shipGroup, ship, asteroid, bullet, bulletGeometry;
+let shipBoundingBox;
 let asteroidList=[];
 let shipObj = {obj:'/assets/spaceship/spaceship.obj', map:'/assets/spaceship/textures/Intergalactic Spaceship_rough.jpg'};
 let asteroidObj = {obj:'assets/asteroid/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/asteroid.obj', map:'/assets/asteroid/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/10464_Asteroid_v1_diffuse.jpg'};
@@ -75,8 +76,6 @@ function update()
 
     requestAnimationFrame(function() { update(); });
     renderer.render( scene, camera ); 
-    let shipLocation = getShipPosition(ship)
-    //let renderedBullet = new Bullet(0,0,0,bullet.clone(),shipLocation,shipGroup)
     counter++
     if (counter % 20 == 0) { 
         counter = 0
@@ -86,22 +85,20 @@ function update()
 
     for (let index = 0; index < asteroidList.length; index++) {
         const element = asteroidList[index];
+        const asteroidBoundingBox = new THREE.Sphere(element.getPosition(), 4)
+        //console.log("asteroid bounds: ",asteroidBoundingBox)
         element.update()
         if(element.getPosition().z <= -50){element.despawn()}
         if(element.getPosition() == getShipPosition(ship)){element.despawn()}
+
+        if(asteroidBoundingBox.intersectsBox(shipBoundingBox)) element.despawn() 
     }
     //renderedBullet.update()
     orbitControls.update();
     shipMovement(ship);
     getShipPosition(ship);
-   
-    
     
 }
-
-
-
-
 
 async function createScene(canvas)
 {
@@ -131,27 +128,28 @@ async function createScene(canvas)
     scene.add(sun);
 
     shipGroup = new THREE.Object3D;
+
     ship = await loadObj(shipObj,0,-15,3,1,1,1);
+    shipBoundingBox = new THREE.Sphere(ship.position, 5)
+    //shipBoundingBox.setFromObject(ship)
+    console.log("ship bounds: ",shipBoundingBox, "ship position: ", ship.position)
+
     asteroid = await loadObj(asteroidObj,0,10,550,.005,.005,.005);
+    
+
     bulletGeometry = new THREE.SphereGeometry(.5,30,30)
     const material = new THREE.MeshBasicMaterial({color: 'blue'})
     bullet = new THREE.Mesh(bulletGeometry,material)
    
     shipGroup.add(ship);
-     
     shipGroup.rotation.y = 1.8
-    shipMovement(shipGroup)
-    console.log(ship.position)
-
     scene.add(shipGroup);
-   
-
-
 }
 
 
 function shipMovement(ship)
 {
+
     document.addEventListener("keydown", event=>{
         if(event.key == 'w') up = true
         if(event.key == 's') down = true
@@ -189,22 +187,6 @@ function getShipPosition(ship)
     //console.log(shipPosition)
     return shipPosition
 }
-
-// function spawnShoot(renderedBullet, shipPosition){
-//     let shoot = false
-//     document.addEventListener("keyup", event=>{
-//         if(event.key == ' ') shoot = false
-//     })
-
-//     document.addEventListener("keydown", event=>{
-//         if(event.key == ' ') shoot = true
-//     })
-
-//     if (shoot){
-//         renderedBullet.update()
-//     }
-
-// }
 
 
 main();
