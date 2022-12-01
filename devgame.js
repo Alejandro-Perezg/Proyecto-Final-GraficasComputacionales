@@ -94,10 +94,10 @@ function update()
         canShoot=true;   
         delayBullet = 0
     }
-
+    
     for (let index = 0; index < asteroidList.length; index++) {
         const element = asteroidList[index];
-        asteroidBoundingBox = new THREE.Sphere(element.getPosition(), 4)
+        asteroidBoundingBox = new THREE.Sphere(element.getPosition(), 4) //se crea la hitbox del asteroide
         element.update()
         if(element.getPosition().z == -50)
         {
@@ -105,7 +105,7 @@ function update()
             score -= 2
         }
     
-        if(asteroidBoundingBox.intersectsBox(shipBoundingBox)) 
+        if(asteroidBoundingBox.intersectsBox(shipBoundingBox)) //se checa cuando choca la nave y el asteroide
         {
         score +=1
         element.despawn()  
@@ -161,7 +161,7 @@ async function createScene(canvas)
         'milkyway_pz.jpg',
         'milkyway_nz.jpg',
     ]);
-    //scene.background = new THREE.Color('gray') 
+    
 
     camera = new THREE.PerspectiveCamera( 70, canvas.width / canvas.height, 1, 4000 );
     camera.position.set(-25, 2.5, 6.5);
@@ -202,7 +202,7 @@ async function createScene(canvas)
     shipGroup = new THREE.Object3D;
 
     ship = await loadObj(shipObj,0,-15,3,1,1,1);
-    shipBoundingBox = new THREE.Sphere(ship.position, 5)
+    shipBoundingBox = new THREE.Sphere(ship.position, 5) //se crea el hitbox de la nave
 
 
     asteroid = await loadObj(asteroidObj,0,10,550,.005,.005,.005);
