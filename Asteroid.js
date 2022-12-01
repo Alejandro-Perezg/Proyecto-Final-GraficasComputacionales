@@ -1,3 +1,4 @@
+
 class Asteroid
 {
     constructor(x,y,z,asteroidObj, shipgroup)
@@ -8,8 +9,8 @@ class Asteroid
         this.asteroidObj = asteroidObj.clone()
         shipgroup.add(this.asteroidObj)
 
-        const max = 30;
-        const min = -30;
+        const max = 15;
+        const min = -15;
         this.asteroidObj.position.x = (Math.random()) * (max - min) + min;
         this.asteroidObj.position.y = (Math.random()) * (max - min) + min;
         

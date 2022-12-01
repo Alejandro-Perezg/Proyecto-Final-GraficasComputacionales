@@ -14,6 +14,7 @@ let asteroidList=[];
 let shipObj = {obj:'/assets/spaceship/spaceship.obj', map:'/assets/spaceship/textures/Intergalactic Spaceship_rough.jpg'};
 let asteroidObj = {obj:'assets/asteroid/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/asteroid.obj', map:'/assets/asteroid/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/10464_Asteroid_v1_diffuse.jpg'};
 let up = false, down = false, right = false, left = false, shooting = false;
+let hitSound;
 
 
 
@@ -91,7 +92,11 @@ function update()
         if(element.getPosition().z <= -50){element.despawn()}
         if(element.getPosition() == getShipPosition(ship)){element.despawn()}
 
-        if(asteroidBoundingBox.intersectsBox(shipBoundingBox)) element.despawn() 
+        if(asteroidBoundingBox.intersectsBox(shipBoundingBox)) 
+        {
+        element.despawn() 
+        hitSound.play() 
+        }
     }
     //renderedBullet.update()
     orbitControls.update();
@@ -121,6 +126,34 @@ async function createScene(canvas)
     camera = new THREE.PerspectiveCamera( 70, canvas.width / canvas.height, 1, 4000 );
     camera.position.set(-25, 2.5, 6.5);
     orbitControls = new OrbitControls(camera, renderer.domElement);
+
+
+    const listener = new THREE.AudioListener();
+    camera.add( listener );
+
+    const audioLoader = new THREE.AudioLoader();
+    const backgroundSound = new THREE.Audio(listener);
+
+    audioLoader.load( '/assets/music/corneria.mp3', function( buffer ) {
+        backgroundSound.setBuffer( buffer );
+        backgroundSound.setLoop(true);
+        backgroundSound.setVolume(0.5);
+        backgroundSound.play();
+    });
+
+    hitSound = new THREE.Audio(listener);
+
+    audioLoader.load( '/assets/music/hit.wav', function( buffer ) {
+        hitSound.setBuffer( buffer );
+        hitSound.setLoop(false);
+        hitSound.setVolume(0.3);
+        //backgroundSound.play();
+    });
+
+
+    
+
+ 
 
     const sun = new THREE.SpotLight(0xe9f7f7);
     sun.position.set(0,100,1000)
@@ -179,6 +212,7 @@ function shipMovement(ship)
     if(right) ship.position.x -= 1;
     if(left) ship.position.x += 1;
     if(shooting) console.log("shooting")
+    return shooting
 }
 
 function getShipPosition(ship)
