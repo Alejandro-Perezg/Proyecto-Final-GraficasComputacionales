@@ -5,7 +5,7 @@ class Bullet
     this.x = x
     this.y = y
     this.z = z
-    this.bulletObj = bulletObj
+    this.bulletObj = bulletObj.clone()
     this.shipPosition = shipPosition
 
     shipgroup.add(this.bulletObj)
@@ -14,6 +14,16 @@ class Bullet
     update()
     {   
         this.bulletObj.position.z += 2
+    }
+
+    despawn()
+    {
+        this.bulletObj.clear()
+    }
+    getPosition()
+    {
+        let bulletPosition = this.bulletObj.position
+        return bulletPosition
     }
 }
 
