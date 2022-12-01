@@ -18,7 +18,7 @@ let hitSound;
 let canShoot=true, delayBullet = 0;
 
 let asteroidBoundingBox, bulletBoundingBox;
-
+let score = 0;
 
 
 
@@ -99,10 +99,15 @@ function update()
         const element = asteroidList[index];
         asteroidBoundingBox = new THREE.Sphere(element.getPosition(), 4)
         element.update()
-        if(element.getPosition().z <= -50){element.despawn()}
+        if(element.getPosition().z == -50)
+        {
+            element.despawn()
+            score -= 2
+        }
     
         if(asteroidBoundingBox.intersectsBox(shipBoundingBox)) 
         {
+        score +=1
         element.despawn()  
         hitSound.play() 
         }
@@ -116,7 +121,26 @@ function update()
         bulletElement.update()    
     }
 
+    document.getElementById('score').innerHTML = "score: " + score;
 
+    if (score == 0 && score <= 20) {
+        document.getElementById('endorse').innerHTML = "GOOD!";
+    }
+
+    if (score >= 21 && score <= 40) {
+        document.getElementById('endorse').innerHTML = "VERY GOOD!";
+    }
+
+    if (score <= -1 && score >= -20) {
+        document.getElementById('endorse').innerHTML = "BAD!";
+    }
+    if (score <= -21 && score >= -40) {
+        document.getElementById('endorse').innerHTML = "VERY BAD!!";
+    }
+
+    if (score <= -41) {
+        document.getElementById('endorse').innerHTML = "UNLUCKY";
+    }
     orbitControls.update();
     shipMovement(ship);
 }
