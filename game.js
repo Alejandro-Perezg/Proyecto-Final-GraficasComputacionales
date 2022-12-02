@@ -1,10 +1,10 @@
 "use strict"; 
 
 import * as THREE from './libs/three.js/three.module.js'
-import { OrbitControls } from './libs/three.js/controls/OrbitControls.js'
-import { OBJLoader } from './libs/three.js/loaders/OBJLoader.js'
+import { OrbitControls } from './libs/three.js/controls/OrbitControls.js';
+import { OBJLoader } from './libs/three.js/loaders/OBJLoader.js';
 import {Asteroid} from './Asteroid.js'
-import { Bullet } from './Bullet.js'
+import { Bullet } from './Bullet.js';
 
 let counter = 0;
 let renderer, scene, camera, orbitControls;
@@ -19,7 +19,8 @@ let canShoot=true, delayBullet = 0;
 
 let asteroidBoundingBox, bulletBoundingBox;
 let score = 0;
-
+let play= true;
+let bestscore = 0;
 
 
 
@@ -78,71 +79,96 @@ async function loadObj(objModel,xpos,ypos,zpos,scaleX,scaleY,scaleZ)
 
 function update() 
 {
+    if (play)
+    {
 
-    requestAnimationFrame(function() { update(); });
-    renderer.render( scene, camera ); 
-    counter++
-    if (counter % 20 == 0) { 
-        counter = 0
-        let renderedAsteroid = new Asteroid (0,10,155,asteroid, shipGroup)
-        asteroidList.push(renderedAsteroid) 
-    }
-
-    delayBullet++;
-
-    if (( delayBullet > 10  ) && (canShoot==false) )  { 
-        canShoot=true;   
-        delayBullet = 0
-    }
-
-    for (let index = 0; index < asteroidList.length; index++) {
-        const element = asteroidList[index];
-        asteroidBoundingBox = new THREE.Sphere(element.getPosition(), 4)
-        element.update()
-        if(element.getPosition().z == -50)
-        {
-            element.despawn()
-            score -= 2
-        }
-    
-        if(asteroidBoundingBox.intersectsBox(shipBoundingBox)) 
-        {
-        score +=1
-        element.despawn()  
-        hitSound.play() 
+        requestAnimationFrame(function() { update(); });
+        renderer.render( scene, camera ); 
+        counter++
+        if (counter % 20 == 0) { 
+            counter = 0
+            let renderedAsteroid = new Asteroid (0,10,155,asteroid, shipGroup)
+            asteroidList.push(renderedAsteroid) 
         }
 
+        delayBullet++;
 
-    }
+        if (( delayBullet > 10  ) && (canShoot==false) )  { 
+            canShoot=true;   
+            delayBullet = 0
+        }
 
-    for (let index = 0; index < bulletList.length; index++) {
-        const bulletElement = bulletList[index];
-        bulletBoundingBox = new THREE.Sphere(bulletElement.getPosition(), 5)
-        bulletElement.update()    
-    }
+        for (let index = 0; index < bulletList.length; index++) {
+            const bulletElement = bulletList[index];
+            bulletBoundingBox = new THREE.Sphere(bulletElement.getPosition(), 5)
+            bulletElement.update()    
+        }
+        
+        for (let index = 0; index < asteroidList.length; index++) {
+            const element = asteroidList[index];
+            asteroidBoundingBox = new THREE.Sphere(element.getPosition(), 4) //se crea la hitbox del asteroide
+            element.update()
+            if(element.getPosition().z == -50)
+            {
+                element.despawn()
+                score -= 3
+            }
+        
+            if(asteroidBoundingBox.intersectsBox(shipBoundingBox)) //se checa cuando choca la nave y el asteroide
+            {
+                element.despawn()  
+                hitSound.play() 
+                score += 1
+            }
 
-    document.getElementById('score').innerHTML = "score: " + score;
+            for(let indexBullet = 0; indexBullet < bulletList.length; indexBullet++){
+                const bulletElement = bulletList[indexBullet];
+                bulletBoundingBox = new THREE.Sphere(bulletElement.getPosition(), 2)
 
-    if (score == 0 && score <= 20) {
-        document.getElementById('endorse').innerHTML = "GOOD!";
-    }
+                if(asteroidBoundingBox.intersectsSphere(bulletBoundingBox)){
+                    element.despawn();
+                    score+=2;
+                        
+                }
+            }
 
-    if (score >= 21 && score <= 40) {
-        document.getElementById('endorse').innerHTML = "VERY GOOD!";
-    }
 
-    if (score <= -1 && score >= -20) {
-        document.getElementById('endorse').innerHTML = "BAD!";
-    }
-    if (score <= -21 && score >= -40) {
-        document.getElementById('endorse').innerHTML = "VERY BAD!!";
-    }
+        }
 
-    if (score <= -41) {
-        document.getElementById('endorse').innerHTML = "UNLUCKY";
+        document.getElementById('score').innerHTML = "score: " + score;
+        document.getElementById('bestscore').innerHTML = "Best score: " + bestscore;
+
+
+        if (score == 0 && score <= 20) {
+            document.getElementById('endorse').innerHTML = "GOOD!";
+        }
+
+        if (score >= 21 && score <= 40) {
+            document.getElementById('endorse').innerHTML = "VERY GOOD!";
+        }
+
+        if (score <= -1 && score >= -20) {
+            document.getElementById('endorse').innerHTML = "BAD!";
+        }
+        if (score <= -21 && score >= -40) {
+            document.getElementById('endorse').innerHTML = "VERY BAD!!";
+        }
+
+        if (score <= -41) {
+            document.getElementById('endorse').innerHTML = "UNLUCKY";
+        }
+
+        if (score > bestscore) {
+            bestscore = score;
+        }
+        if (score <= -31) {
+            play = false
+            alert("you lose! Best score: " + bestscore);
+            document.location.reload(true)
+        }
+        orbitControls.update();
+        shipMovement(ship);
     }
-    orbitControls.update();
-    shipMovement(ship);
 }
 
 async function createScene(canvas)
@@ -161,7 +187,7 @@ async function createScene(canvas)
         'milkyway_pz.jpg',
         'milkyway_nz.jpg',
     ]);
-    //scene.background = new THREE.Color('gray') 
+    
 
     camera = new THREE.PerspectiveCamera( 70, canvas.width / canvas.height, 1, 4000 );
     camera.position.set(-25, 2.5, 6.5);
@@ -202,7 +228,7 @@ async function createScene(canvas)
     shipGroup = new THREE.Object3D;
 
     ship = await loadObj(shipObj,0,-15,3,1,1,1);
-    shipBoundingBox = new THREE.Sphere(ship.position, 5)
+    shipBoundingBox = new THREE.Sphere(ship.position, 5) //se crea el hitbox de la nave
 
 
     asteroid = await loadObj(asteroidObj,0,10,550,.005,.005,.005);
@@ -269,7 +295,7 @@ function shipMovement(ship)
 
 main();
 
-// u cant escape, it lives in your walls
+
 // ███████╗██╗░░░██╗███╗░░██╗███╗░░██╗██╗░░░██╗
 // ██╔════╝██║░░░██║████╗░██║████╗░██║╚██╗░██╔╝
 // █████╗░░██║░░░██║██╔██╗██║██╔██╗██║░╚████╔╝░

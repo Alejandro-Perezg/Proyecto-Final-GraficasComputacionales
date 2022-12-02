@@ -19,7 +19,8 @@ let canShoot=true, delayBullet = 0;
 
 let asteroidBoundingBox, bulletBoundingBox;
 let score = 0;
-
+let play= true;
+let bestscore = 0;
 
 
 
@@ -78,71 +79,96 @@ async function loadObj(objModel,xpos,ypos,zpos,scaleX,scaleY,scaleZ)
 
 function update() 
 {
+    if (play)
+    {
 
-    requestAnimationFrame(function() { update(); });
-    renderer.render( scene, camera ); 
-    counter++
-    if (counter % 20 == 0) { 
-        counter = 0
-        let renderedAsteroid = new Asteroid (0,10,155,asteroid, shipGroup)
-        asteroidList.push(renderedAsteroid) 
-    }
-
-    delayBullet++;
-
-    if (( delayBullet > 10  ) && (canShoot==false) )  { 
-        canShoot=true;   
-        delayBullet = 0
-    }
-    
-    for (let index = 0; index < asteroidList.length; index++) {
-        const element = asteroidList[index];
-        asteroidBoundingBox = new THREE.Sphere(element.getPosition(), 4) //se crea la hitbox del asteroide
-        element.update()
-        if(element.getPosition().z == -50)
-        {
-            element.despawn()
-            score -= 2
-        }
-    
-        if(asteroidBoundingBox.intersectsBox(shipBoundingBox)) //se checa cuando choca la nave y el asteroide
-        {
-        score +=1
-        element.despawn()  
-        hitSound.play() 
+        requestAnimationFrame(function() { update(); });
+        renderer.render( scene, camera ); 
+        counter++
+        if (counter % 20 == 0) { 
+            counter = 0
+            let renderedAsteroid = new Asteroid (0,10,155,asteroid, shipGroup)
+            asteroidList.push(renderedAsteroid) 
         }
 
+        delayBullet++;
 
-    }
+        if (( delayBullet > 10  ) && (canShoot==false) )  { 
+            canShoot=true;   
+            delayBullet = 0
+        }
 
-    for (let index = 0; index < bulletList.length; index++) {
-        const bulletElement = bulletList[index];
-        bulletBoundingBox = new THREE.Sphere(bulletElement.getPosition(), 5)
-        bulletElement.update()    
-    }
+        for (let index = 0; index < bulletList.length; index++) {
+            const bulletElement = bulletList[index];
+            bulletBoundingBox = new THREE.Sphere(bulletElement.getPosition(), 5)
+            bulletElement.update()    
+        }
+        
+        for (let index = 0; index < asteroidList.length; index++) {
+            const element = asteroidList[index];
+            asteroidBoundingBox = new THREE.Sphere(element.getPosition(), 4) //se crea la hitbox del asteroide
+            element.update()
+            if(element.getPosition().z == -50)
+            {
+                element.despawn()
+                score -= 3
+            }
+        
+            if(asteroidBoundingBox.intersectsBox(shipBoundingBox)) //se checa cuando choca la nave y el asteroide
+            {
+                element.despawn()  
+                hitSound.play() 
+                score += 1
+            }
 
-    document.getElementById('score').innerHTML = "score: " + score;
+            for(let indexBullet = 0; indexBullet < bulletList.length; indexBullet++){
+                const bulletElement = bulletList[indexBullet];
+                bulletBoundingBox = new THREE.Sphere(bulletElement.getPosition(), 2)
 
-    if (score == 0 && score <= 20) {
-        document.getElementById('endorse').innerHTML = "GOOD!";
-    }
+                if(asteroidBoundingBox.intersectsSphere(bulletBoundingBox)){
+                    element.despawn();
+                    score+=2;
+                        
+                }
+            }
 
-    if (score >= 21 && score <= 40) {
-        document.getElementById('endorse').innerHTML = "VERY GOOD!";
-    }
 
-    if (score <= -1 && score >= -20) {
-        document.getElementById('endorse').innerHTML = "BAD!";
-    }
-    if (score <= -21 && score >= -40) {
-        document.getElementById('endorse').innerHTML = "VERY BAD!!";
-    }
+        }
 
-    if (score <= -41) {
-        document.getElementById('endorse').innerHTML = "UNLUCKY";
+        document.getElementById('score').innerHTML = "score: " + score;
+        document.getElementById('bestscore').innerHTML = "Best score: " + bestscore;
+
+
+        if (score == 0 && score <= 20) {
+            document.getElementById('endorse').innerHTML = "GOOD!";
+        }
+
+        if (score >= 21 && score <= 40) {
+            document.getElementById('endorse').innerHTML = "VERY GOOD!";
+        }
+
+        if (score <= -1 && score >= -20) {
+            document.getElementById('endorse').innerHTML = "BAD!";
+        }
+        if (score <= -21 && score >= -40) {
+            document.getElementById('endorse').innerHTML = "VERY BAD!!";
+        }
+
+        if (score <= -41) {
+            document.getElementById('endorse').innerHTML = "UNLUCKY";
+        }
+
+        if (score > bestscore) {
+            bestscore = score;
+        }
+        if (score <= -31) {
+            play = false
+            alert("you lose! Best score: " + bestscore);
+            document.location.reload(true)
+        }
+        orbitControls.update();
+        shipMovement(ship);
     }
-    orbitControls.update();
-    shipMovement(ship);
 }
 
 async function createScene(canvas)
@@ -269,7 +295,7 @@ function shipMovement(ship)
 
 main();
 
-// u cant escape, it lives in your walls
+
 // ███████╗██╗░░░██╗███╗░░██╗███╗░░██╗██╗░░░██╗
 // ██╔════╝██║░░░██║████╗░██║████╗░██║╚██╗░██╔╝
 // █████╗░░██║░░░██║██╔██╗██║██╔██╗██║░╚████╔╝░

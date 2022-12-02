@@ -18,7 +18,7 @@ class Bullet
 
     despawn()
     {
-        this.bulletObj.clear()
+        this.bulletObj.remove()
     }
     getPosition()
     {
