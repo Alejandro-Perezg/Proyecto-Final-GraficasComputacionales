@@ -9,8 +9,8 @@ class Asteroid
         this.asteroidObj = asteroidObj.clone()
         shipgroup.add(this.asteroidObj)
 
-        const max = 20;
-        const min = -20;
+        const max = 30;
+        const min = -30;
         this.asteroidObj.position.x = (Math.random()) * (max - min) + min;
         this.asteroidObj.position.y = (Math.random()) * (max - min) + min;
         

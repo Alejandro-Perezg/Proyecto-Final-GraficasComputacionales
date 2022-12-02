@@ -161,7 +161,7 @@ function update()
         if (score > bestscore) {
             bestscore = score;
         }
-        if (score <= -31) {
+        if (score <= -51) {
             play = false
             alert("you lose! Best score: " + bestscore);
             document.location.reload(true)
